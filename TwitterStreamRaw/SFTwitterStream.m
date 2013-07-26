@@ -28,12 +28,22 @@
 
 @implementation SFTwitterStream
 
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        
+        _queue = [[NSOperationQueue alloc] init];
+    }
+    return self;
+}
+
 - (id)initWithAccount:(ACAccount *)account
            controller:(NSString *)controller
                action:(NSString *)action
  andDataReceivedBlock:(ObjectCompletionBlock)dataReceivedBlock
 {
-    if (self = [super init]) {
+    if (self = [self init]) {
 
         _account = account;
         _action = action;
@@ -57,7 +67,6 @@
     
     [request setAccount:self.account];
 
-    self.queue = [[NSOperationQueue alloc] init];
     self.connection = [[NSURLConnection alloc] initWithRequest:request.preparedURLRequest
                                                       delegate:self
                                               startImmediately:NO];
@@ -67,10 +76,12 @@
 
 - (void)stop
 {
+    [self.queue setSuspended:YES];
     [self.queue cancelAllOperations];
-    [self.connection cancel];
-    self.connection = nil;
-    self.queue = nil;
+    [self.queue addOperationWithBlock:^{
+        [self.connection cancel];
+    }];
+    [self.queue setSuspended:NO];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
