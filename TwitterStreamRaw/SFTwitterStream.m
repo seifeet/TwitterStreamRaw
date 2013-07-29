@@ -100,12 +100,16 @@
 
 #pragma mark - private helper methods
 
+/*
+ Most of the time Tweets arrive one by one
+ When more than one Tweet is received,
+ Tweets are separated by '\r\n'
+ */
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
     NSString *response = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    
-    for (NSString *tweet in [response componentsSeparatedByString:@"\r\n"]) {
 
+    for (NSString *tweet in [response componentsSeparatedByString:@"\r\n"]) {
         if ([tweet length]) {
             [self parseTweet:tweet];
         }
