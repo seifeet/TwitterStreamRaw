@@ -27,6 +27,8 @@
 		550C288F17A2565600310278 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 550C288E17A2565600310278 /* Default-568h@2x.png */; };
 		550C289117A2566800310278 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 550C289017A2566800310278 /* Default.png */; };
 		550C289317A2567A00310278 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 550C289217A2567A00310278 /* Default@2x.png */; };
+		550C28C517A6337A00310278 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 550C28C417A6337A00310278 /* Reachability.m */; };
+		550C28C717A633C100310278 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 550C28C617A633C100310278 /* SystemConfiguration.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +62,9 @@
 		550C288E17A2565600310278 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		550C289017A2566800310278 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		550C289217A2567A00310278 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		550C28C317A6337A00310278 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		550C28C417A6337A00310278 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		550C28C617A633C100310278 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				550C28C717A633C100310278 /* SystemConfiguration.framework in Frameworks */,
 				550C287B17A1FD9300310278 /* Accounts.framework in Frameworks */,
 				550C287917A1FD5000310278 /* Social.framework in Frameworks */,
 				550C282217A192BE00310278 /* UIKit.framework in Frameworks */,
@@ -81,10 +87,12 @@
 		550C281517A192BE00310278 = {
 			isa = PBXGroup;
 			children = (
+				550C28C617A633C100310278 /* SystemConfiguration.framework */,
 				550C282017A192BE00310278 /* Frameworks */,
 				550C289417A2640800310278 /* Icons */,
 				550C281F17A192BE00310278 /* Products */,
 				550C282717A192BE00310278 /* TwitterStreamRaw */,
+				550C28C117A6337A00310278 /* Vendor */,
 			);
 			sourceTree = "<group>";
 		};
@@ -186,6 +194,24 @@
 			name = Icons;
 			sourceTree = "<group>";
 		};
+		550C28C117A6337A00310278 /* Vendor */ = {
+			isa = PBXGroup;
+			children = (
+				550C28C217A6337A00310278 /* Apple */,
+			);
+			name = Vendor;
+			path = TwitterStreamRaw/Vendor;
+			sourceTree = "<group>";
+		};
+		550C28C217A6337A00310278 /* Apple */ = {
+			isa = PBXGroup;
+			children = (
+				550C28C317A6337A00310278 /* Reachability.h */,
+				550C28C417A6337A00310278 /* Reachability.m */,
+			);
+			path = Apple;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -263,6 +289,7 @@
 				550C288217A2129200310278 /* SFTableViewController.m in Sources */,
 				550C288617A225AD00310278 /* SFTwitterStream.m in Sources */,
 				550C288917A2392000310278 /* SFTweetModel.m in Sources */,
+				550C28C517A6337A00310278 /* Reachability.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
