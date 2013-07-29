@@ -23,6 +23,7 @@
 @property (nonatomic, strong) NSString *term;
 @property (nonatomic, strong) NSURLConnection *connection;
 @property (nonatomic, strong) NSOperationQueue *queue;
+@property (nonatomic, strong) NSMutableString *buffer;
 
 @property BOOL shouldRestart;
 
@@ -36,6 +37,7 @@
     if (self) {
         
         _queue = [[NSOperationQueue alloc] init];
+        _buffer = [[NSMutableString alloc] initWithCapacity:6];
         _shouldRestart = NO;
     }
     return self;
@@ -60,12 +62,14 @@
 - (void)startWithTerm:(NSString *)term
 {
     self.term = term;
-
+    
     [self startQueue];
 }
 
 - (void)startQueue
 {
+    [self.buffer setString: @""];
+
     NSDictionary *parameters = [NSDictionary dictionaryWithObject:self.term
                                                            forKey:self.action];
 
@@ -109,10 +113,19 @@
 {
     NSString *response = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 
-    for (NSString *tweet in [response componentsSeparatedByString:@"\r\n"]) {
-        if ([tweet length]) {
-            [self parseTweet:tweet];
+    [self.buffer appendString:response];
+    
+    NSLog(@"%@", response);
+
+    if ([self isValidResponse:self.buffer]) {
+        
+        for (NSString *tweet in [self.buffer componentsSeparatedByString:@"\r\n"]) {
+            if ([tweet length]) {
+                [self parseTweet:tweet];
+            }
         }
+
+        [self.buffer setString: @""];
     }
 }
 
@@ -135,6 +148,17 @@
         NSLog(@"%@", tweet);
         NSLog(@" ------------");
     }
+}
+
+- (BOOL)isValidResponse:(NSString *)response
+{
+    if ([response hasPrefix:@"{"] &&
+        ([response hasSuffix:@"}"] || [response hasSuffix:@"}\r\n"]))
+    {
+        return YES;
+    }
+    
+    return NO;
 }
 
 @end
