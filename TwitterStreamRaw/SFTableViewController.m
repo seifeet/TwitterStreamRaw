@@ -11,8 +11,11 @@
 #import "SFAlertHelper.h"
 #import "SFTwitterStream.h"
 #import "SFTweetModel.h"
+#import "SFAppDelegate.h"
 
 #import <Accounts/Accounts.h>
+
+#import "Reachability.h"
 
 @interface SFTableViewController ()
 {
@@ -37,6 +40,13 @@
 {
     _isRunning = NO;
     _tweets = [[NSMutableArray alloc] initWithCapacity:10];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkNetworkStatus:) name:kReachabilityChangedNotification object:nil];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (id)init
@@ -134,7 +144,7 @@
 {
     [textField resignFirstResponder];
 
-    [self start];
+    [self startAndClear:YES];
     
     return NO; // We do not want UITextField to insert line-breaks.
 }
@@ -180,7 +190,7 @@
     return self.headerView;
 }
 
-- (void)start
+- (void)startAndClear:(BOOL)clear
 {
     if (self.isRunning) {
 
@@ -192,8 +202,10 @@
         self.goButton.selected = YES;
         self.isRunning = YES;
 
-        [self.tweets removeAllObjects];
-        [self.tableView reloadData];
+        if (clear) {
+            [self.tweets removeAllObjects];
+            [self.tableView reloadData];
+        }
         
         [self startTwitterStreamsWithTerm:self.textField.text];
     }
@@ -275,7 +287,27 @@
         [self stop];
     } else {
 
-        [self start];
+        [self startAndClear:YES];
+    }
+}
+
+-(void) checkNetworkStatus:(NSNotification *)notice
+{
+    NetworkStatus internetStatus = [SharedAppDelegate.internetReachable currentReachabilityStatus];
+    switch (internetStatus)
+    {
+        case NotReachable:
+        {
+            break;
+        }
+        case ReachableViaWiFi:
+        case ReachableViaWWAN:
+        {
+            if (self.isRunning) {
+                [self startAndClear:NO];
+            }
+            break;
+        }
     }
 }
 

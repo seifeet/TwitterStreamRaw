@@ -11,8 +11,6 @@
 #import <Social/Social.h>
 #import <Accounts/Accounts.h>
 
-#import "Reachability.h"
-
 @interface SFTwitterStream()
 {
 }
@@ -25,7 +23,6 @@
 @property (nonatomic, strong) NSString *term;
 @property (nonatomic, strong) NSURLConnection *connection;
 @property (nonatomic, strong) NSOperationQueue *queue;
-@property (nonatomic, strong) Reachability *internetReachable;
 
 @property BOOL shouldRestart;
 
@@ -39,15 +36,9 @@
     if (self) {
         
         _queue = [[NSOperationQueue alloc] init];
-        _internetReachable = nil;
         _shouldRestart = NO;
     }
     return self;
-}
-
-- (void)dealloc
-{
-    [self stopReachability];
 }
 
 - (id)initWithAccount:(ACAccount *)account
@@ -62,15 +53,12 @@
         _dataReceivedBlock = dataReceivedBlock;
 
         _url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", kSFTwitterApiServerUrl, controller]];
-
-        [self startReachability];
     }
     return self;
 }
 
 - (void)startWithTerm:(NSString *)term
 {
-    self.shouldRestart = YES;
     self.term = term;
 
     [self startQueue];
@@ -97,8 +85,6 @@
 
 - (void)stop
 {
-    self.shouldRestart = NO;
-
     [self stopQueue];
 }
 
@@ -127,49 +113,6 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             self.dataReceivedBlock(json);
         });
-    }
-}
-
-- (void)startReachability
-{
-    if (!self.internetReachable) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkNetworkStatus:) name:kReachabilityChangedNotification object:nil];
-
-        self.internetReachable = [Reachability reachabilityForInternetConnection];
-        [self.internetReachable startNotifier];
-    }
-}
-
-- (void)stopReachability
-{
-    if (self.internetReachable) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self];
-        
-        [self.internetReachable stopNotifier];
-        self.internetReachable = nil;
-    }
-}
-
--(void) checkNetworkStatus:(NSNotification *)notice
-{
-    NetworkStatus internetStatus = [self.internetReachable currentReachabilityStatus];
-    switch (internetStatus)
-    {
-        case NotReachable:
-        {
-            if (self.shouldRestart) {
-                [self stopQueue];
-            }
-            break;
-        }
-        case ReachableViaWiFi:
-        case ReachableViaWWAN:
-        {
-            if (self.shouldRestart) {
-                [self startQueue];
-            }
-            break;
-        }
     }
 }
 

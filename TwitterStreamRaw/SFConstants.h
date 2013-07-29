@@ -11,3 +11,5 @@
 typedef void (^ObjectCompletionBlock)(id object);
 
 FOUNDATION_EXPORT NSString *const kSFTwitterApiServerUrl;
+
+#define SharedAppDelegate ((SFAppDelegate*)[[UIApplication sharedApplication] delegate])

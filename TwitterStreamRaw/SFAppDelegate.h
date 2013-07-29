@@ -9,11 +9,14 @@
 #import <UIKit/UIKit.h>
 
 @class SFTableViewController;
+@class Reachability;
 
 @interface SFAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 
 @property (strong, nonatomic) SFTableViewController *viewController;
+
+@property (nonatomic, strong) Reachability *internetReachable;
 
 @end
