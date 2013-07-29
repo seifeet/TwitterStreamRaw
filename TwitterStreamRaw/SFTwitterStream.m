@@ -102,17 +102,34 @@
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    NSLog(@"%@", [NSString stringWithUTF8String:[data bytes]]);
+    NSString *response = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    
+    for (NSString *tweet in [response componentsSeparatedByString:@"\r\n"]) {
+
+        if ([tweet length]) {
+            [self parseTweet:tweet];
+        }
+    }
+}
+
+- (void)parseTweet:(NSString *)tweet
+{
+    NSData *data = [tweet dataUsingEncoding:NSUTF8StringEncoding];
     
     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data
                                                          options:NSJSONReadingAllowFragments
                                                            error:nil];
 
     if (json && self.dataReceivedBlock){
-
         dispatch_async(dispatch_get_main_queue(), ^{
             self.dataReceivedBlock(json);
         });
+    }
+
+    if (!json) {
+        NSLog(@" ------------ Failed to parse a tweet");
+        NSLog(@"%@", tweet);
+        NSLog(@" ------------");
     }
 }
 
