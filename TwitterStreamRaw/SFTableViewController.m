@@ -237,8 +237,8 @@
 
                 self.trackStream = [[SFTwitterStream alloc] initWithAccount:account controller:@"statuses/filter.json" action:@"track" andDataReceivedBlock:^(id object)
                 {
-                    if (object && [object isKindOfClass:NSDictionary.class]) {
-                        [self parseTweetsFromJson:object];
+                    if (object && [object isKindOfClass:SFTweetModel.class]) {
+                        [self addTweet:object];
                     }
                 }];
 
@@ -252,29 +252,15 @@
     }
 }
 
-- (void)parseTweetsFromJson:(NSDictionary *)json
+- (void)addTweet:(SFTweetModel *)tweet
 {
-    if (json)
-    {
-        [self.tableView beginUpdates];
-        
-        NSString *text = [json objectForKey:@"text"];
-        NSDictionary *user = [json objectForKey:@"user"];
+    [self.tableView beginUpdates];
 
-        if (text && user)
-        {
-            SFTweetModel *tweet = [[SFTweetModel alloc] init];
+    [self.tweets addObject:tweet];
 
-            tweet.text = text;
-            tweet.userName = [user objectForKey:@"name"];
+    [self.tableView insertSections:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.tweets.count-1, 1)] withRowAnimation:UITableViewRowAnimationAutomatic];
 
-            [self.tweets addObject:tweet];
-
-            [self.tableView insertSections:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.tweets.count-1, 1)] withRowAnimation:UITableViewRowAnimationAutomatic];
-        }
-
-        [self.tableView endUpdates];
-    }
+    [self.tableView endUpdates];
 }
 
 #pragma mark - selectors
